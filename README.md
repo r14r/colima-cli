@@ -47,3 +47,22 @@ just release
 ```
 
 Requires Go 1.21+ to build. No external Go dependencies. Colima, Docker and Lima required for runtime commands.
+
+## v0.1.0: Containers, Compose, dashboard
+
+```bash
+colima-cli containers
+colima-cli containers --running
+colima-cli containers --stats
+colima-cli compose ls
+colima-cli compose ps -a
+colima-cli compose logs -f
+colima-cli compose up -d --build
+colima-cli compose down
+colima-cli compose config
+colima-cli compose stats
+colima-cli dashboard --interval 5
+colima-cli dashboard --once
+```
+
+All Docker operations target the Colima context. The dashboard is read-only. `compose stats` looks up project container IDs and shows a one-shot stats snapshot.
