@@ -1,0 +1,43 @@
+schemaVersion: 2
+project:
+  name: colima-cli
+  type: go
+  description: Colima VM and Docker diagnostics and management
+variables:
+  binary: colima-cli
+  deployPath: "{{ env.DEPLOY_PATH | /Users/Shared/CLOUD/DeveloperTools/bin }}"
+defaults:
+  failFast: true
+  timeout: 10m
+requirements:
+  commands: [go]
+workflows:
+  ci:
+    tasks: [check, test, build]
+  setup:
+    tasks: [check, test, build, deploy]
+tasks:
+  check:
+    steps:
+      - id: vet
+        command:
+          exec: go
+          args: [vet, ./...]
+  test:
+    steps:
+      - id: unit-test
+        command:
+          exec: go
+          args: [test, ./...]
+  build:
+    steps:
+      - id: compile
+        command:
+          exec: go
+          args: [build, -o, colima-cli, .]
+  deploy:
+    steps:
+      - id: install
+        shell: |
+          mkdir -p "{{ deployPath }}"
+          install -m 0755 ./colima-cli "{{ deployPath }}/colima-cli"
