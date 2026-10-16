@@ -5,6 +5,7 @@ import (
  "errors"
  "flag"
  "fmt"
+ "io"
  "os"
  "os/exec"
  "strconv"
@@ -20,8 +21,8 @@ func (systemRunner) Run(name string,args ...string)(string,error) {
  b,e:=exec.Command(name,args...).CombinedOutput()
  return strings.TrimSpace(string(b)),e
 }
-type App struct {run Runner}
-func NewApp(r Runner)*App{return &App{r}}
+type App struct {run Runner; out io.Writer; err io.Writer}
+func NewApp(r Runner)*App{return &App{run:r,out:os.Stdout,err:os.Stderr}}
 func (a *App) call(name string,args ...string) error {
  out,e:=a.run.Run(name,args...)
  if out!="" {fmt.Println(out)}
@@ -106,6 +107,9 @@ VM MANAGEMENT
   template [args...]
 
 DOCKER
+  containers [--running] [--stats]
+  compose ls|ps|logs|up|down|config|stats
+  dashboard [--once] [--interval N]
   docker info
   docker ps [args...]
   docker images
@@ -124,8 +128,11 @@ func (a *App) Run(args []string)error{
  switch cmd {
  case "help","--help","-h":usage();return nil
  case "version","--version","-V":fmt.Println("colima-cli",version);return nil
- case "whatsnew":fmt.Println("0.1.0: Initial release — status, diagnostics, VM lifecycle and Docker helpers.");return nil
+ case "whatsnew":fmt.Println("0.1.0: Containers, Docker Compose management, and live dashboard.");return nil
  case "status":return a.status(rest)
+ case "containers":return a.containers(rest)
+ case "compose":return a.compose(rest)
+ case "dashboard":return a.dashboard(rest)
  case "doctor":return a.doctor()
  case "test","selftest":return a.call("docker","--context","colima","run","--rm","hello-world")
  case "resources":return a.resources()
