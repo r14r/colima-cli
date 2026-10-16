@@ -12,7 +12,7 @@ import (
  "time"
 )
 
-const version = "0.0.1"
+const version = "0.1.0"
 
 type Runner interface { Run(string,...string)(string,error) }
 type systemRunner struct{}
@@ -81,7 +81,7 @@ func (a *App) doctor()error {
 }
 func has(args []string,value string)bool{for _,s:=range args{if s==value{return true}};return false}
 func without(args []string,value string)[]string{r:=[]string{};for _,s:=range args{if s!=value{r=append(r,s)}};return r}
-func usage(){fmt.Print(`colima-cli 0.0.1 — Colima and Docker management
+func usage(){fmt.Print(`colima-cli 0.1.0 — Colima and Docker management
 
 USAGE
   colima-cli <command> [options]
@@ -124,7 +124,7 @@ func (a *App) Run(args []string)error{
  switch cmd {
  case "help","--help","-h":usage();return nil
  case "version","--version","-V":fmt.Println("colima-cli",version);return nil
- case "whatsnew":fmt.Println("0.0.1: Initial release — status, diagnostics, VM lifecycle and Docker helpers.");return nil
+ case "whatsnew":fmt.Println("0.1.0: Initial release — status, diagnostics, VM lifecycle and Docker helpers.");return nil
  case "status":return a.status(rest)
  case "doctor":return a.doctor()
  case "test","selftest":return a.call("docker","--context","colima","run","--rm","hello-world")
