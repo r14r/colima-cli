@@ -1,0 +1,49 @@
+# colima-cli
+
+Go-based Colima and Docker VM diagnostics and management. Version **0.0.1**.
+
+## Installation
+
+```bash
+git clone https://github.com/r14r/colima-cli.git
+cd colima-cli
+just install
+```
+
+Installs into `/Users/Shared/CLOUD/DeveloperTools/bin` by default; override using `INSTALL_DIR`.
+
+## Examples
+
+```bash
+colima-cli status
+colima-cli status --quick
+colima-cli status --json
+colima-cli status --resources
+colima-cli doctor
+colima-cli test
+colima-cli list
+colima-cli start --cpu 4 --memory 8
+colima-cli stop
+colima-cli restart
+colima-cli exec -- uname -a
+colima-cli docker ps -a
+colima-cli docker images
+colima-cli docker df
+colima-cli context current
+colima-cli context use --yes
+colima-cli docker prune --yes
+colima-cli delete --yes
+colima-cli wait 60
+```
+
+Status checks do not change Docker context. Docker commands explicitly use the Colima context. Destructive actions require `--yes`.
+
+## Development
+
+```bash
+just precommit
+just build
+just release
+```
+
+Requires Go 1.21+ to build. No external Go dependencies. Colima, Docker and Lima required for runtime commands.
