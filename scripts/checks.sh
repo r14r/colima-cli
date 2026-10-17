@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+export PATH="$(go env GOPATH)/bin:$PATH"
 
 run() { printf '\n==> %s\n' "$*"; "$@"; }
 need() {
