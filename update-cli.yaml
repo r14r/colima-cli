@@ -5,39 +5,85 @@ project:
   description: Colima VM and Docker diagnostics and management
 variables:
   binary: colima-cli
-  deployPath: "{{ env.DEPLOY_PATH | /Users/Shared/CLOUD/DeveloperTools/bin }}"
+  deployPath: "{{ env.DEPLOY_PATH | /usr/local/bin }}"
 defaults:
   failFast: true
   timeout: 10m
 requirements:
-  commands: [go]
+  commands: [go, just, git]
 workflows:
   ci:
-    tasks: [check, test, build]
+    tasks: [format, precommit, race, build, smoke]
   setup:
-    tasks: [check, test, build, deploy]
+    tasks: [format, precommit, race, build, deploy, verify]
+  update:
+    tasks: [format, precommit, race, build, deploy, verify]
 tasks:
-  check:
+  format:
     steps:
-      - id: vet
+      - id: gofmt
+        command:
+          exec: gofmt
+          args: [-w, .]
+  precommit:
+    steps:
+      - id: quality-gate
+        command:
+          exec: just
+          args: [precommit]
+  race:
+    steps:
+      - id: race-tests
         command:
           exec: go
-          args: [vet, ./...]
-  test:
-    steps:
-      - id: unit-test
-        command:
-          exec: go
-          args: [test, ./...]
+          args: [test, -race, -count=1, ./...]
   build:
     steps:
       - id: compile
-        command:
-          exec: go
-          args: [build, -o, colima-cli, .]
+        shell: |
+          set -eu
+          mkdir -p dist
+          go build -trimpath -ldflags "-s -w" -o dist/colima-cli .
+  smoke:
+    steps:
+      - id: built-binary
+        shell: |
+          set -eu
+          test -x dist/colima-cli
+          expected="$(tr -d '[:space:]' < VERSION)"
+          actual="$(./dist/colima-cli --version)"
+          case "$actual" in
+            *"$expected"*) ;;
+            *) echo "Built version mismatch: expected $expected; got $actual" >&2; exit 1 ;;
+          esac
+          ./dist/colima-cli --help >/dev/null
   deploy:
     steps:
       - id: install
         shell: |
-          mkdir -p "{{ deployPath }}"
-          install -m 0755 ./colima-cli "{{ deployPath }}/colima-cli"
+          set -eu
+          target="{{ deployPath }}"
+          test -x dist/colima-cli
+          if [ -d "$target" ] && [ -w "$target" ]; then
+            install -m 0755 dist/colima-cli "$target/colima-cli"
+          elif [ ! -e "$target" ] && [ -w "$(dirname "$target")" ]; then
+            mkdir -p "$target"
+            install -m 0755 dist/colima-cli "$target/colima-cli"
+          else
+            sudo mkdir -p "$target"
+            sudo install -m 0755 dist/colima-cli "$target/colima-cli"
+          fi
+  verify:
+    steps:
+      - id: installed-binary
+        shell: |
+          set -eu
+          target="{{ deployPath }}/colima-cli"
+          test -x "$target"
+          expected="$(tr -d '[:space:]' < VERSION)"
+          actual="$("$target" --version)"
+          case "$actual" in
+            *"$expected"*) ;;
+            *) echo "Installed version mismatch: expected $expected; got $actual" >&2; exit 1 ;;
+          esac
+          "$target" --help >/dev/null
