@@ -15,7 +15,7 @@ workflows:
   ci:
     tasks: [format, precommit, race, build, smoke]
   setup:
-    tasks: [format, precommit, race, build, deploy, verify]
+    tasks: [format, precommit, race, build, smoke, deploy, verify]
   update:
     tasks: [format, precommit, race, build, deploy, verify]
 tasks:
