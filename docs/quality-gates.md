@@ -13,7 +13,7 @@ Commands:
 - `just prepush` or `just ci` — all pre-commit checks plus race tests and vulnerability scanning.
 - `just fmt` — explicitly apply gofmt formatting.
 - `just tools` — install the two Go-based analyzers in `$(go env GOPATH)/bin` (add this location to PATH).
-- `just hooks-install` — configure this clone to use the version-controlled `.githooks` directory.
+- `just hooks-install` — mark the hooks executable and configure this clone to use the version-controlled `.githooks` directory.
 
 The hooks run the same script as GitHub Actions. Checks do not change source files. On failures, fix the reported issue rather than bypassing hooks.
 
