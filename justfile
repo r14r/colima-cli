@@ -35,7 +35,7 @@ bootstrap:
     @command -v python3 >/dev/null || { echo "Python 3 is required" >&2; exit 1; }
     @command -v git >/dev/null || { echo "Git is required" >&2; exit 1; }
     python3 -m venv .venv
-    .venv/bin/python -m pip install --upgrade pip pre-commit
+    @.venv/bin/python -m pip install --quiet --quiet --progress-bar off --disable-pip-version-check --upgrade pip pre-commit >/dev/null
     go mod download
     just tools
     just hooks-install
