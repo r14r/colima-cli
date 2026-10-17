@@ -32,6 +32,7 @@ tools:
     go install golang.org/x/vuln/cmd/govulncheck@latest
 
 hooks-install:
+    chmod +x .githooks/pre-commit .githooks/pre-push
     git config --local core.hooksPath .githooks
     @echo "Git pre-commit and pre-push hooks installed"
 
