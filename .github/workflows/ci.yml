@@ -2,6 +2,8 @@ name: CI
 on:
   push:
   pull_request:
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -9,8 +11,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
-      - run: gofmt -w .
-      - run: go vet ./...
-      - run: go test -race ./...
-      - run: go build -o /tmp/colima-cli .
+          go-version: stable
+          cache: true
+      - name: Install checking tools
+        run: |
+          go install github.com/rhysd/actionlint/cmd/actionlint@latest
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: Run the same checks as the local pre-push hook
+        run: bash scripts/checks.sh all

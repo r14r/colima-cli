@@ -1,3 +1,4 @@
 dist/
 colima-cli
 .DS_Store
+.venv/
