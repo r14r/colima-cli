@@ -126,13 +126,13 @@ build: precommit
 # Build and install into /usr/local/bin (override with INSTALL_DIR).
 install: build
     @dir="{{install_dir}}"; \
-    if [ -w "$$dir" ]; then \
-      install -m 0755 dist/{{binary}} "$$dir/{{binary}}"; \
+    if [ -w "$dir" ]; then \
+      install -m 0755 dist/{{binary}} "$dir/{{binary}}"; \
     else \
-      sudo mkdir -p "$$dir"; \
-      sudo install -m 0755 dist/{{binary}} "$$dir/{{binary}}"; \
+      sudo mkdir -p "$dir"; \
+      sudo install -m 0755 dist/{{binary}} "$dir/{{binary}}"; \
     fi; \
-    echo "Installed {{binary}} {{version}} to $$dir/{{binary}}"
+    echo "Installed {{binary}} {{version}} to $dir/{{binary}}"
 
 # Alias for install.
 deploy: install
